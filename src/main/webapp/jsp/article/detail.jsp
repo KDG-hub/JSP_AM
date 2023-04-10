@@ -9,7 +9,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>게시물 상세보기</title>
 </head>
 <body>
 	<h1><%= (int) articlerow.get("id")%>번 게시글</h1>
