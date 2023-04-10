@@ -18,7 +18,9 @@
 	<div>작성 날짜 :<%= (LocalDateTime) articlerow.get("regDate") %></div>
 	<div>제목 : <%= (String)articlerow.get("title")%></div>
 	<div>내용 : <%= (String) articlerow.get("body")%></div>
-	<div><a href="list">목록</a></div>
-	<div><a href="delete?id=<%= (int) articlerow.get("id") %>">게시글 삭제</a></div>
+	<div><a href="list">목록</a>
+	</div>
+	<div><a href="delete?id=<%= (int) articlerow.get("id") %>">게시글 삭제</a>
+	</div>
 </body>
 </html>

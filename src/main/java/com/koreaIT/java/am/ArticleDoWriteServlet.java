@@ -16,43 +16,34 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/dowrite")
+public class ArticleDoWriteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-				
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
+		
+		response.setContentType("text/html; charset= UTF-8;");
 		Connection conn = null;
-		
-		int page = 1;
-		if(request.getParameter("page") != null && request.getParameter("page").length() != 0) {
-			page = Integer.parseInt(request.getParameter("page"));
-		}
-	
-		int itemsInAPage = 10;
-		int limitFrom = (page - 1) * itemsInAPage;
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1:3306/JSPTest?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 
 			conn = DriverManager.getConnection(url, "root", "");
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*) FROM article");
-			int totalCount = DBUtil.selectRowIntValue(conn, sql);
-			int totalPage =(int) Math.ceil((double) totalCount / itemsInAPage);
+			String title = request.getParameter("title");
+			String body = request.getParameter("body");
 			
-			sql = SecSql.from("SELECT * FROM article");
-			sql.append("ORDER BY id DESC");
-			sql.append("LIMIT ?, ?",limitFrom, itemsInAPage);
+			SecSql sql = new SecSql();
+
+			sql.append("INSERT INTO article");
+			sql.append("SET regDate = NOW()");
+			sql.append(", updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", `body` = ?", body);
 			
-			List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
+			int id = DBUtil.insert(conn, sql);
 			
-			request.setAttribute("articleListMap", articleListMap);
-			request.setAttribute("page", page);
-			request.setAttribute("totalPage", totalPage);
-			
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+			response.getWriter().append(String.format("<script>alert('%d번 글이 작성 되었습니다.'); location.replace('list');</script>", id));
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");
@@ -68,4 +59,9 @@ public class ArticleListServlet extends HttpServlet {
 			}
 		}
 	}
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
 }
