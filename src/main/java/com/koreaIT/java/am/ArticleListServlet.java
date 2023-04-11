@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.koreaIT.java.am.config.Config;
 import com.koreaIT.java.am.util.DBUtil;
 import com.koreaIT.java.am.util.SecSql;
 
@@ -24,24 +25,34 @@ public class ArticleListServlet extends HttpServlet {
 				
 		Connection conn = null;
 		
-		int page = 1;
-		if(request.getParameter("page") != null && request.getParameter("page").length() != 0) {
-			page = Integer.parseInt(request.getParameter("page"));
-		}
-	
-		int itemsInAPage = 10;
-		int limitFrom = (page - 1) * itemsInAPage;
 		
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			String url = "jdbc:mysql://127.0.0.1:3306/JSPTest?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
+			Class.forName(Config.getDBDriverName());
 
-			conn = DriverManager.getConnection(url, "root", "");
+			conn = DriverManager.getConnection(Config.getDBUrl(), Config.getDBUserName(), Config.getDBPassword());
+			
+			int page = 1;
+			if(request.getParameter("page") != null && request.getParameter("page").length() != 0) {
+				page = Integer.parseInt(request.getParameter("page"));
+			}
+			
+			int itemsInAPage = 10;
+			int limitFrom = (page - 1) * itemsInAPage;
 			
 			SecSql sql = SecSql.from("SELECT COUNT(*) FROM article");
 			int totalCount = DBUtil.selectRowIntValue(conn, sql);
 			int totalPage =(int) Math.ceil((double) totalCount / itemsInAPage);
 			
+			int pageSize = 5;
+			int from = page - pageSize;
+			if (from < 1) {
+				from = 1;
+			}
+			int end = page + pageSize;
+			if (end > totalPage) {
+				end = totalPage;
+			}
+
 			sql = SecSql.from("SELECT * FROM article");
 			sql.append("ORDER BY id DESC");
 			sql.append("LIMIT ?, ?",limitFrom, itemsInAPage);
@@ -51,6 +62,8 @@ public class ArticleListServlet extends HttpServlet {
 			request.setAttribute("articleListMap", articleListMap);
 			request.setAttribute("page", page);
 			request.setAttribute("totalPage", totalPage);
+			request.setAttribute("from", from);
+			request.setAttribute("end", end);
 			
 			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
 			

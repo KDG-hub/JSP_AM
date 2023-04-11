@@ -10,6 +10,8 @@
 	request.getAttribute("page");
 	int Page = (int) request.getAttribute("page");
 	int totalPage = (int) request.getAttribute("totalPage");
+	int from = (int) request.getAttribute("from");
+	int end = (int) request.getAttribute("end");
 %>
 
 <!DOCTYPE html>
@@ -53,9 +55,27 @@
 		</style>
 		
 		<div class ="page">
-			<%for(int i = 1; i<= totalPage; i++){ %>
+			<%
+			if (Page > 1) {
+			%>
+			<a href="list?page=1">◀</a>
+			<% 
+			}
+			%>
+			<%
+			for (int i = from; i <= end; i++) { 
+			%>
 			<a class ="<%=Page == i ? "red" : ""%> " href="list?page=<%=i %>"><%=i %></a>
-			<%} %>
+			<%
+			} 
+			%>
+			<%
+			if (Page < totalPage) {
+			%>
+			<a href="list?page=<%= totalPage %>">▶</a>
+			<% 
+			}
+			%>
 		</div>	
 </body>
 </html>
