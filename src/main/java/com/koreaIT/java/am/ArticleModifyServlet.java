@@ -15,8 +15,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/write")
-public class ArticleWriteServlet extends HttpServlet {
+@WebServlet("/article/modify")
+public class ArticleModifyServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -39,7 +39,7 @@ public class ArticleWriteServlet extends HttpServlet {
 			
 			request.setAttribute("articlerow", articlerow);
 			
-			request.getRequestDispatcher("/jsp/article/write.jsp").forward(request, response);
+			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");

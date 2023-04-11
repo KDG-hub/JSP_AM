@@ -1,3 +1,5 @@
+<%@page import="com.koreaIT.java.am.util.Util"%>
+<%@page import="java.time.LocalDateTime"%>
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -36,7 +38,7 @@
 			%>
 			<tr>
 				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("id") %></a></td>
-				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("regDate") %></a></td>
+				<td><a href="detail?id=<%= articleMap.get("id") %>"> <%= Util.datetimeFormat((LocalDateTime)articleMap.get("regDate")) %></a></td>
 				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("title") %></a></td>
 			</tr>	
 			<% 

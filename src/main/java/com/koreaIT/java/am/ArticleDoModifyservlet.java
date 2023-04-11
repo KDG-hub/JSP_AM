@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.koreaIT.java.am.util.DBUtil;
 import com.koreaIT.java.am.util.SecSql;
@@ -15,31 +14,35 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/write")
-public class ArticleWriteServlet extends HttpServlet {
+@WebServlet("/article/domodify")
+public class ArticleDoModifyservlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
+		
+		response.setContentType("text/html; charset= UTF-8;");
 		Connection conn = null;
-
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1:3306/JSPTest?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 
 			conn = DriverManager.getConnection(url, "root", "");
 			
-			int id = Integer.parseInt(request.getParameter("id"));
+			int id = Integer.parseInt(request.getParameter("id")) ;
+			String title = request.getParameter("title");
+			String body = request.getParameter("body");
 			
 			SecSql sql = new SecSql();
 
-			sql.append("SELECT * FROM article");
-			sql.append("WHERE id = ?",id);
+			sql.append("UPDATE article");
+			sql.append("SET updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", `body` = ?", body);
+			sql.append("WHERE id = ?", id);
 			
-			Map<String, Object> articlerow = DBUtil.selectRow(conn, sql);
+			DBUtil.update(conn, sql);
 			
-			request.setAttribute("articlerow", articlerow);
-			
-			request.getRequestDispatcher("/jsp/article/write.jsp").forward(request, response);
+			response.getWriter().append(String.format("<script>alert('%d번 글이 수정 되었습니다.'); location.replace('detail?id=%d');</script>", id,id));
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");
@@ -55,4 +58,9 @@ public class ArticleWriteServlet extends HttpServlet {
 			}
 		}
 	}
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
 }
