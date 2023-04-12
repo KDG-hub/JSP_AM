@@ -27,11 +27,9 @@
 		<a href="list">목록</a>
 	</div>
 	<div>
-		<%if(loginedMemberId != -1){%>
-			<%if(loginedMemberId == (int)articlerow.get("memberId")){ %>
+		<%if(loginedMemberId != -1 && loginedMemberId == (int)articlerow.get("memberId")){%>
 		<a href="delete?id=<%= (int) articlerow.get("id") %>" onclick = "if(confirm('정말 삭제하시겠습니까?') == false) return false;">게시글 삭제</a>
 		<a href="modify?id=<%= (int) articlerow.get("id") %>">게시글 수정</a>
-			<%} %>
 		<%} %>
 	</div>
 </body>

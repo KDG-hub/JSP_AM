@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/modify")
 public class ArticleModifyServlet extends HttpServlet {
@@ -22,7 +23,6 @@ public class ArticleModifyServlet extends HttpServlet {
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
-
 		try {
 			Class.forName(Config.getDBDriverName());
 
@@ -30,14 +30,31 @@ public class ArticleModifyServlet extends HttpServlet {
 			
 			int id = Integer.parseInt(request.getParameter("id"));
 			
-			SecSql sql = new SecSql();
-
-			sql.append("SELECT * FROM article");
+			SecSql sql = SecSql.from("SELECT * FROM article");
 			sql.append("WHERE id = ?",id);
 			
 			Map<String, Object> articlerow = DBUtil.selectRow(conn, sql);
 			
 			request.setAttribute("articlerow", articlerow);
+			
+			HttpSession session = request.getSession();
+			int loginedMemberId = -1;
+
+			if (session.getAttribute("loginedMemberId") != null) {
+				loginedMemberId = (int) session.getAttribute("loginedMemberId");
+			}
+			
+			if(loginedMemberId == -1) {
+				response.setContentType("text/html; charset= UTF-8;");
+				response.getWriter().append(String.format("<script>alert('로그인 후 이용해주세요'); location.replace('../member/login');</script>"));
+				return;
+			}
+			
+			if (session.getAttribute("loginedMemberId") != articlerow.get("memberId")) {
+				response.setContentType("text/html; charset= UTF-8;");
+				response.getWriter().append(String.format("<script>alert('해당 게시글에 관한 권한이 없습니다.'); location.replace('detail?id=%d');</script>",id));
+				return;
+			}
 			
 			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response);
 			
