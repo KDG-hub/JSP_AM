@@ -12,6 +12,16 @@ CREATE TABLE article(
 	`body` TEXT NOT NULL
 );
 
+# member 테이블 생성
+CREATE TABLE `member`(
+	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	regDate DATETIME NOT NULL,
+	upDateDate DATETIME NOT NULL,
+	loginId VARCHAR(50) NOT NULL UNIQUE,
+	loginPw VARCHAR(50) NOT NULL,
+	memberName VARCHAR(50) NOT NULL
+);
+
 # article 테스트 데이터
 INSERT INTO article
 SET regDate = NOW(),
