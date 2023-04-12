@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 
 import com.koreaIT.java.am.config.Config;
 import com.koreaIT.java.am.util.DBUtil;
@@ -14,9 +15,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/member/dojoin")
-public class MemberDoJoin extends HttpServlet {
+@WebServlet("/member/dologin")
+public class MemberDoLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
@@ -30,28 +32,27 @@ public class MemberDoJoin extends HttpServlet {
 
 			String loginId = request.getParameter("loginId");
 			String loginPw = request.getParameter("loginPw");
-			String memberName = request.getParameter("memberName");
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*) FROM `member`");
+			SecSql sql = SecSql.from("SELECT * FROM `member`");
 			sql.append("WHERE loginId = ?",loginId);
-			int idDupChk = DBUtil.selectRowIntValue(conn, sql);
 			
-			if(idDupChk == 1) {
-				response.getWriter().append(String.format("<script>alert('%s는 중복된 아이디입니다.'); location.replace('join');</script>", loginId));
+			Map<String, Object> memberRow = DBUtil.selectRow(conn, sql);
+			
+			if(memberRow.isEmpty()) {
+				response.getWriter().append(String.format("<script>alert('존재하지 않는 아이디입니다.'); location.replace('login');</script>"));
 				return;
 			}
-
-			sql = SecSql.from("INSERT INTO `member`");
-			sql.append("SET regDate = NOW()");
-			sql.append(", updateDate = NOW()");
-			sql.append(", loginId = ?", loginId);
-			sql.append(", loginPw = ?", loginPw);
-			sql.append(", `memberName` = ?", memberName);
-
-			DBUtil.insert(conn, sql);
+			
+			if(memberRow.get("loginPw").equals(loginPw) == false) {
+				response.getWriter().append(String.format("<script>alert('비밀번호를 확인해주세요 '); location.replace('login');</script>"));
+				return;
+			}
+			
+			HttpSession session = request.getSession();
+			session.setAttribute("loginedMemberId", memberRow.get("id"));
+			session.setAttribute("loginedMemberLoginId", memberRow.get("loginId"));
 
 			response.getWriter().append(String.format("<script>alert('%s님 환영합니다'); location.replace('../home/main');</script>", loginId));
-
 			
 		} catch (ClassNotFoundException e) {
 			System.out.println("드라이버 로딩 실패");
