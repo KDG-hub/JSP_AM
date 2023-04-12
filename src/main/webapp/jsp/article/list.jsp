@@ -7,7 +7,6 @@
 
 <%
 	List<Map<String, Object>> articleListMap = (List<Map<String, Object>>) request.getAttribute("articleListMap");
-	request.getAttribute("page");
 	int Page = (int) request.getAttribute("page");
 	int totalPage = (int) request.getAttribute("totalPage");
 	int from = (int) request.getAttribute("from");
@@ -24,8 +23,8 @@
 	<h1><a href="../home/main">메인</a></h1>
 	<h1>게시물 리스트</h1>
 	<div><a href="write">게시글 작성</a></div>
+	<div><a href="../member/login">로그인</a></div>
 	<div><a href="../member/join">회원가입</a></div>
-	
 		<table border = "1">
 			<colgroup>
 				<col width="50"/>
@@ -34,6 +33,7 @@
 			<tr>
 				<th>번호</th>
 				<th>날짜</th>
+				<th>작성자</th>
 				<th>제목</th>	
 			</tr>
 			<% 
@@ -42,6 +42,7 @@
 			<tr>
 				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("id") %></a></td>
 				<td><a href="detail?id=<%= articleMap.get("id") %>"> <%= Util.datetimeFormat((LocalDateTime)articleMap.get("regDate")) %></a></td>
+				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("writerName") %></a></td>
 				<td><a href="detail?id=<%= articleMap.get("id") %>"><%= articleMap.get("title") %></a></td>
 			</tr>	
 			<% 

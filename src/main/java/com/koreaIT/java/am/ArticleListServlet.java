@@ -25,7 +25,6 @@ public class ArticleListServlet extends HttpServlet {
 				
 		Connection conn = null;
 		
-		
 		try {
 			Class.forName(Config.getDBDriverName());
 
@@ -53,7 +52,9 @@ public class ArticleListServlet extends HttpServlet {
 				end = totalPage;
 			}
 
-			sql = SecSql.from("SELECT * FROM article");
+			sql = SecSql.from("SELECT A.*, M.memberName AS writerName FROM article A");
+			sql.append("INNER JOIN `member` M");
+			sql.append("ON A.memberId = M.id");
 			sql.append("ORDER BY id DESC");
 			sql.append("LIMIT ?, ?",limitFrom, itemsInAPage);
 			

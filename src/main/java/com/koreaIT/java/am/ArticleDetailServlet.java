@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 import com.koreaIT.java.am.config.Config;
@@ -16,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/detail")
 public class ArticleDetailServlet extends HttpServlet {
@@ -25,6 +25,14 @@ public class ArticleDetailServlet extends HttpServlet {
 		
 		Connection conn = null;
 
+		HttpSession session = request.getSession();
+
+		int loginedMemberId = -1;
+
+		if (session.getAttribute("loginedMemberId") != null) {
+			loginedMemberId = (int) session.getAttribute("loginedMemberId");
+		}
+		
 		try {
 			Class.forName(Config.getDBDriverName());
 
@@ -34,12 +42,15 @@ public class ArticleDetailServlet extends HttpServlet {
 			
 			SecSql sql = new SecSql();
 
-			sql.append("SELECT * FROM article");
-			sql.append("WHERE id = ?",id);
+			sql = SecSql.from("SELECT A.*, M.memberName AS writerName FROM article A");
+			sql.append("INNER JOIN `member` M");
+			sql.append("ON A.memberId = M.id");
+			sql.append("WHERE A.id = ?",id);
 			
 			Map<String, Object> articlerow = DBUtil.selectRow(conn, sql);
 			
 			request.setAttribute("articlerow", articlerow);
+			request.setAttribute("loginedMemberId", loginedMemberId);
 			
 			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
 			
