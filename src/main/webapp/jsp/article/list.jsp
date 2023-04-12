@@ -23,8 +23,7 @@
 	<h1><a href="../home/main">메인</a></h1>
 	<h1>게시물 리스트</h1>
 	<div><a href="write">게시글 작성</a></div>
-	<div><a href="../member/login">로그인</a></div>
-	<div><a href="../member/join">회원가입</a></div>
+	<%@ include file = "../topbar/topbar.jspf" %>
 		<table border = "1">
 			<colgroup>
 				<col width="50"/>
