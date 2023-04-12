@@ -14,14 +14,16 @@ public class MainPageServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
 		HttpSession session = request.getSession();
-		
-		int loginedMember = -1;
-		if(session.getAttribute("loginedMemberId") != null) {
-			loginedMember = (int) session.getAttribute("loginedMemberId");
+
+		int loginedMemberId = -1;
+
+		if (session.getAttribute("loginedMemberId") != null) {
+			loginedMemberId = (int) session.getAttribute("loginedMemberId");
 		}
-		
-		request.setAttribute("loginedMeber", loginedMember);
+
+		request.setAttribute("loginedMemberId", loginedMemberId);
 		
 		request.getRequestDispatcher("/jsp/home/main.jsp").forward(request, response);
 	}

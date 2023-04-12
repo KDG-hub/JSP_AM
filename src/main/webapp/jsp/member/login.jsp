@@ -37,6 +37,7 @@
 	</script>
 </head>
 <body>
+	<h1><a href="../home/main">메인</a></h1>
 	<h1>로그인</h1>
 	
 	<form action ="dologin" method="post" onsubmit="jbSubmit(this); return false;">
